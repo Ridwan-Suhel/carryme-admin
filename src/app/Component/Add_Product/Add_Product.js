@@ -6,53 +6,76 @@ function Add_Product() {
     const [formData, setFormData] = useState({
         productName: '',
         productDescription: '',
-        productImage: null, 
+        productImage: null,
         productPrice: '',
         productRating: '',
-    });
-
-    const handleInputChange = (event) => {
+      });
+    
+      const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
+          ...prevData,
+          [name]: value,
         }));
-    };
-
-    const handleImageDrop = (acceptedFiles) => {
+      };
+    
+      const handleImageDrop = (acceptedFiles) => {
         setFormData((prevData) => ({
-            ...prevData,
-            productImage: acceptedFiles[0],
+          ...prevData,
+          productImage: acceptedFiles[0],
         }));
-    };
-
-    const handleSubmit = (event) => {
+      };
+    
+      const handleSubmit = (event) => {
         event.preventDefault();
         console.log('Form Data:', formData);
-    };
-
-    const handleImageLinkChange = (event) => {
+        handleAddProduct(); // Call the function to save to localStorage
+      };
+    
+      const handleImageLinkChange = (event) => {
         const imageUrl = event.target.value;
         setFormData((prevData) => ({
-            ...prevData,
-            productImage: imageUrl,
+          ...prevData,
+          productImage: imageUrl,
         }));
-    };
-
-    const { getRootProps, getInputProps } = useDropzone({
+      };
+    
+      const { getRootProps, getInputProps } = useDropzone({
         onDrop: handleImageDrop,
         accept: 'image/*',
         maxFiles: 1,
-    });
-
-
+      });
+    
+      const handleAddProduct = () => {
+        const newProduct = {
+          id: Date.now(), // A simple way to generate a unique ID
+          ...formData,
+        };
+    
+        const existingProducts = JSON.parse(localStorage.getItem('productData')) || [];
+        existingProducts.push(newProduct);
+    
+        localStorage.setItem('productData', JSON.stringify(existingProducts));
+    
+        // Clear the form data (optional)
+        setFormData({
+          productName: '',
+          productDescription: '',
+          productImage: null,
+          productPrice: '',
+          productRating: '',
+        });
+    
+        // Log the updated product list
+        console.log('Updated Product List:', existingProducts);
+      };
 
 
     return (
         <>
-            <h1 className='text-xl pt-8 pb-5'>Please add a product</h1>
             <div className="wrapper">
-                <div className="w-full max-w-[700px] mx-auto p-6 bg-white rounded shadow-md">
+            <h1 className='text-xl pt-8 pb-5'>Please add a product</h1>
+                <div className="w-full min-w-[650px] p-6 bg-white rounded shadow-md">
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label className="block mb-2 font-semibold text-gray-600" htmlFor="productName">
